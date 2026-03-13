@@ -1,10 +1,12 @@
 # 🍉 mcp-watermelon
 
-MCP server for the [Watermelon.ai](https://watermelon.ai) customer support platform. Exposes all 13 public API endpoints as MCP tools, enabling AI assistants to manage contacts, conversations, messages, custom fields, and webhooks.
+MCP server for [Watermelon.ai](https://link.watermelon.ai/casey) — the AI-powered customer support platform. Exposes all 13 public API endpoints as MCP tools, enabling AI assistants to manage contacts, conversations, messages, custom fields, and webhooks.
 
 > 🍉🍉🍉 **DISCLAIMER** 🍉🍉🍉
 >
 > **This is an unofficial, community-built project.** It is **not** endorsed, supported, or affiliated with [Watermelon.ai](https://watermelon.ai) — *yet*. We built this because we love what they're building and believe MCP integration makes their platform even more powerful. If you're from Watermelon and reading this: let's talk! 🍉
+>
+> *Some links in this README are affiliate links. If you sign up via these links we earn a small commission at no extra cost to you.* 🍉
 
 ## 🍉 Installation
 
@@ -30,7 +32,7 @@ export WATERMELON_API_KEY="your-api-key"
 export WATERMELON_SECRET_KEY="your-secret-key"
 ```
 
-Get your API credentials from the [Watermelon dashboard](https://watermelon.ai) under Settings → API.
+Don't have a Watermelon account? [Sign up here](https://link.watermelon.ai/casey). Then get your API credentials from the dashboard under Settings → API.
 
 ### Claude Desktop / Claude Code
 
@@ -134,7 +136,7 @@ This server covers **100% of the Watermelon public API** (13 endpoints). See [GA
 
 ## 🍉 About Watermelon
 
-[Watermelon.ai](https://watermelon.ai) is an AI-powered customer support platform that helps businesses automate conversations across channels. They offer a [partner/affiliate program](https://watermelon.ai/partner/) with 25% first-year commission if you want to refer clients.
+[Watermelon.ai](https://watermelon.ai) is an AI-powered customer support platform that helps businesses automate conversations across channels. If you're not using Watermelon yet, [try it out here](https://link.watermelon.ai/casey) — they offer a 25% first-year [partner/affiliate program](https://watermelon.ai/partner/) too.
 
 ## 🍉 License
 
