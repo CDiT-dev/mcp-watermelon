@@ -1,0 +1,16 @@
+services:
+  mcp-watermelon:
+    build: .
+    ports:
+      - "${HOST_PORT:-8002}:8000"
+    environment:
+      - WATERMELON_API_KEY=${WATERMELON_API_KEY}
+      - WATERMELON_SECRET_KEY=${WATERMELON_SECRET_KEY}
+      - MCP_TRANSPORT=streamable-http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8000
+      - KEYCLOAK_ISSUER=${KEYCLOAK_ISSUER:-}
+      - KEYCLOAK_AUDIENCE=${KEYCLOAK_AUDIENCE:-mcp-watermelon}
+      - MCP_BASE_URL=${MCP_BASE_URL:-}
+      - MCP_API_KEY=${MCP_API_KEY:-}
+    restart: unless-stopped
