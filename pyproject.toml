@@ -1,0 +1,43 @@
+[project]
+name = "mcp-watermelon"
+version = "0.1.0"
+description = "MCP server for the Watermelon.ai customer support platform API"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+keywords = [
+    "mcp",
+    "watermelon",
+    "customer-support",
+    "fastmcp",
+]
+dependencies = [
+    "fastmcp>=3.1.0",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.12.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/watermelon_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/watermelon_mcp",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
+[project.scripts]
+server = "watermelon_mcp.server:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=1.0.0",
+    "ruff>=0.15.0",
+]

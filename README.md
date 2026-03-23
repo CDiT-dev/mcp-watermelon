@@ -10,17 +10,12 @@ MCP server for [Watermelon.ai](https://link.watermelon.ai/casey) — the AI-powe
 
 ## 🍉 Installation
 
-```bash
-npm install -g mcp-watermelon
-```
-
-Or clone and build locally:
+Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/cdit-dev/mcp-watermelon.git
 cd mcp-watermelon
-npm install
-npm run build
+uv sync
 ```
 
 ## 🍉 Configuration
@@ -42,8 +37,8 @@ Add to your MCP configuration:
 {
   "mcpServers": {
     "watermelon": {
-      "command": "npx",
-      "args": ["mcp-watermelon"],
+      "command": "uv",
+      "args": ["--directory", "/path/to/mcp-watermelon", "run", "server"],
       "env": {
         "WATERMELON_API_KEY": "your-api-key",
         "WATERMELON_SECRET_KEY": "your-secret-key"
@@ -52,6 +47,14 @@ Add to your MCP configuration:
   }
 }
 ```
+
+### Docker / Container Deployment
+
+```bash
+docker compose up -d
+```
+
+Set credentials in `.env` (see `.env.example`). The container runs on streamable-http transport at port 8002 by default.
 
 ## 🍉 Available Tools
 

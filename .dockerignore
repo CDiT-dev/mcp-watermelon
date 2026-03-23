@@ -1,0 +1,14 @@
+.venv/
+.git/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.egg-info/
+node_modules/
+dist/
+openspec/
+.claude/
+*.tgz
+.DS_Store
+uv.lock
