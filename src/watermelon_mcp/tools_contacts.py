@@ -15,16 +15,16 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
 
     @mcp.tool(name="watermelon_contacts_create")
     async def contacts_create(
-        email_address: Annotated[str, "Email address (required, must be unique)"],
+        email_address: Annotated[str, "Email address (must be unique across contacts)"],
         first_name: Annotated[Optional[str], "First name"] = None,
         last_name: Annotated[Optional[str], "Last name"] = None,
         telephone_number: Annotated[Optional[str], "Phone number in any format, e.g. '+49-555-0100'"] = None,
-        location: Annotated[Optional[str], "Location / city"] = None,
     ) -> str:
         """Create a new contact in Watermelon.
 
-        email_address is required and must be unique across all contacts.
-        Returns the new contact's integer ID on success.
+        email_address is required and must be unique. Returns the new contact's
+        ID on success. Contact deletion is not supported by the API — contacts
+        can only be created and updated.
         """
         data: dict[str, Any] = {"email_address": email_address}
         if first_name is not None:
@@ -33,10 +33,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             data["last_name"] = last_name
         if telephone_number is not None:
             data["telephone_number"] = telephone_number
-        if location is not None:
-            data["location"] = location
         result = await client.post("/contacts", data)
-        # API may return {"id": int} or just int
         if isinstance(result, int):
             return json.dumps({"id": result}, indent=2)
         return json.dumps(result, indent=2)
@@ -46,27 +43,35 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         """Retrieve a specific contact by ID.
 
         Returns full contact details including first_name, last_name,
-        email_address, telephone_number, status, and timestamps.
-        The API returns an array — this tool returns the first match.
+        email_address, telephone_number, status (online/offline), avatar,
+        integration source flags, and custom fields.
         """
         result = await client.get(f"/contacts/{quote(id, safe='')}")
-        # API returns a list even for single ID lookup
         if isinstance(result, list) and len(result) == 1:
             return json.dumps(result[0], indent=2)
         return json.dumps(result, indent=2)
 
     @mcp.tool(name="watermelon_contacts_list")
     async def contacts_list(
-        limit: Annotated[int, Field(ge=1, le=100, description="Number of contacts to return")] = 50,
-        offset: Annotated[int, Field(ge=0, description="Number of contacts to skip for pagination")] = 0,
+        limit: Annotated[int, Field(ge=1, le=100, description="Number of contacts to return")] = 25,
+        page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
+        without_anonymous: Annotated[bool, "Exclude anonymous contacts from results"] = False,
+        date_from: Annotated[Optional[str], "Start of date range filter (ISO 8601)"] = None,
+        date_to: Annotated[Optional[str], "End of date range filter (ISO 8601)"] = None,
     ) -> str:
-        """Retrieve contacts with pagination. Defaults to first 50.
+        """Retrieve contacts with pagination and optional date/anonymity filters.
 
         Returns an array of contact objects with id, first_name, last_name,
-        email_address, telephone_number, status, and timestamps.
-        Use offset to page through results.
+        email_address, telephone_number, status, and custom fields.
         """
-        result = await client.get(f"/contacts?limit={limit}&offset={offset}")
+        params = f"limit={limit}&page={page}"
+        if without_anonymous:
+            params += "&withoutAnonymous=true"
+        if date_from is not None:
+            params += f"&from={quote(date_from, safe='')}"
+        if date_to is not None:
+            params += f"&to={quote(date_to, safe='')}"
+        result = await client.get(f"/contacts?{params}")
         return json.dumps(result, indent=2)
 
     @mcp.tool(name="watermelon_contacts_update")
@@ -76,7 +81,6 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         last_name: Annotated[Optional[str], "Updated last name"] = None,
         email_address: Annotated[Optional[str], "Updated email address"] = None,
         telephone_number: Annotated[Optional[str], "Updated phone number"] = None,
-        location: Annotated[Optional[str], "Updated location"] = None,
     ) -> str:
         """Update an existing contact. Only provided fields are changed.
 
@@ -92,8 +96,6 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             data["email_address"] = email_address
         if telephone_number is not None:
             data["telephone_number"] = telephone_number
-        if location is not None:
-            data["location"] = location
         if not data:
             return json.dumps({"error": "At least one field must be provided to update"}, indent=2)
         result = await client.put(f"/contacts/{quote(id, safe='')}", data)
@@ -104,18 +106,14 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     @mcp.tool(name="watermelon_contacts_search")
     async def contacts_search(
         field_value: Annotated[str, "Value to search for across contact fields"],
-        field_id: Annotated[Optional[int], "Restrict search to a specific field ID (from watermelon_fields_list). Omit to search all fields."] = None,
+        limit: Annotated[int, Field(ge=1, le=100, description="Maximum results per page")] = 25,
+        page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
     ) -> str:
         """Search for contacts by field value.
 
-        Searches across contact fields. Use field_id to restrict to a specific
-        field (call watermelon_fields_list to discover field IDs).
-        Common field IDs: 1=first_name, 2=last_name, 3=email_address, 4=phone_number.
-
-        Returns matching contacts with their IDs.
+        Searches across all contact fields (name, email, phone, etc.).
+        Returns matching contacts with their IDs. Returns 204 if no matches.
         """
-        params = f"fieldValue={quote(field_value, safe='')}"
-        if field_id is not None:
-            params += f"&fieldId={field_id}"
+        params = f"fieldValue={quote(field_value, safe='')}&limit={limit}&page={page}"
         result = await client.get(f"/contacts/search?{params}")
         return json.dumps(result, indent=2)

@@ -1,7 +1,7 @@
 """Message tools for Watermelon MCP server."""
 
 import json
-from typing import Annotated, Any, Optional
+from typing import Annotated, Literal
 from urllib.parse import quote
 
 from fastmcp import FastMCP
@@ -11,60 +11,62 @@ from .client import WatermelonClient
 
 _MAX_MESSAGE_LENGTH = 4000
 
+MessageType = Literal[
+    "text", "sticker", "photo", "video", "file",
+    "activity", "typing", "attachment", "emoji", "location", "contact",
+]
+
 
 def register_message_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     """Register all message-related tools."""
 
     @mcp.tool(name="watermelon_messages_send")
     async def messages_send(
-        conversation_id: Annotated[
-            str,
-            "Conversation ID to send the message in (from watermelon_conversations_list)",
-        ],
+        conversation_id: Annotated[int, "Conversation ID to send the message in"],
+        user_id: Annotated[int, "User/agent ID sending the message"],
         payload: Annotated[
             str,
             Field(
                 min_length=1,
                 max_length=_MAX_MESSAGE_LENGTH,
-                description=f"Message text content (max {_MAX_MESSAGE_LENGTH} characters)",
+                description=f"Message content (max {_MAX_MESSAGE_LENGTH} characters)",
             ),
         ],
-        user_id: Annotated[
-            Optional[str],
-            "User/agent ID sending the message. Required by the API.",
-        ] = None,
+        type: Annotated[
+            MessageType,
+            "Message type. Use 'text' for normal messages.",
+        ] = "text",
     ) -> str:
-        """Send a text message in an existing conversation.
+        """Send a message in an existing conversation.
 
-        The message appears in the conversation thread. The API requires
-        user_id to identify the sender. The payload field contains the
-        message text (max 4000 characters).
+        All fields are required by the API. conversation_id and user_id are
+        integers. The type field defaults to 'text' but supports: text, sticker,
+        photo, video, file, activity, typing, attachment, emoji, location, contact.
+
+        Returns the new message's ID on success.
         """
-        data: dict[str, Any] = {
+        data = {
             "conversation_id": conversation_id,
+            "user_id": user_id,
+            "type": type,
             "payload": payload,
-            "type": "text",
         }
-        if user_id is not None:
-            data["user_id"] = user_id
         result = await client.post("/messages", data)
+        if isinstance(result, int):
+            return json.dumps({"id": result}, indent=2)
         return json.dumps(result, indent=2)
 
     @mcp.tool(name="watermelon_messages_get")
     async def messages_get(
-        id: Annotated[
-            str,
-            "Message ID (from a conversation's message list)",
-        ],
+        id: Annotated[str, "Message ID (from a conversation's message list)"],
     ) -> str:
         """Retrieve a single message by ID.
 
-        Returns message details including conversation_id, payload, type,
-        user_id, and timestamps. The API returns an array — this tool
-        returns the first match.
+        Returns message details: id, conversation_id, user_id, type, payload,
+        read status, and timestamps. Returns 204 if not found.
 
-        In most cases, watermelon_conversations_get already returns all
-        messages for a conversation — prefer that over calling this per message.
+        In most cases, watermelon_conversations_get already returns all messages
+        inline — prefer that over fetching individual messages.
         """
         result = await client.get(f"/messages/{quote(id, safe='')}")
         if isinstance(result, list) and len(result) == 1:

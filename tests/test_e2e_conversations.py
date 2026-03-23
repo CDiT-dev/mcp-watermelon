@@ -1,8 +1,4 @@
-"""E2E tests for conversations.
-
-Note: The conversations endpoint returns 503 when no Watermelon chatbot is
-configured in the account. These tests gracefully handle that case.
-"""
+"""E2E tests for conversations — uses the correct /all/conversations path."""
 
 import pytest
 import httpx
@@ -12,30 +8,31 @@ from watermelon_mcp.client import WatermelonClient
 
 @pytest.mark.asyncio
 async def test_conversations_list(client: WatermelonClient) -> None:
-    """List conversations — may return 503 if no chatbot is configured."""
-    try:
-        result = await client.get("/conversations?limit=5&offset=0")
-        assert isinstance(result, (list, dict))
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 503:
-            pytest.skip("Conversations endpoint returns 503 — no chatbot configured")
-        raise
+    """List conversations returns a list, or None/204 if no conversations exist."""
+    result = await client.get("/all/conversations?limit=5&page=0")
+    # API returns 204 (None) when no conversations exist, or a list
+    assert result is None or isinstance(result, (list, dict))
+
+
+@pytest.mark.asyncio
+async def test_conversations_list_with_date_filter(client: WatermelonClient) -> None:
+    """List conversations with date range filter doesn't error."""
+    result = await client.get(
+        "/all/conversations?limit=5&page=0&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z"
+    )
+    assert result is None or isinstance(result, (list, dict))
 
 
 @pytest.mark.asyncio
 async def test_conversations_get_first(client: WatermelonClient) -> None:
     """Get the first conversation if any exist."""
-    try:
-        listing = await client.get("/conversations?limit=1&offset=0")
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 503:
-            pytest.skip("Conversations endpoint returns 503 — no chatbot configured")
-        raise
+    listing = await client.get("/all/conversations?limit=1&page=0")
 
     if isinstance(listing, list) and listing:
         conv_id = listing[0].get("id")
         if conv_id:
             detail = await client.get(f"/conversations/{conv_id}")
             assert detail is not None
-    else:
-        pytest.skip("No conversations in this Watermelon account")
+            return
+
+    pytest.skip("No conversations in this Watermelon account")

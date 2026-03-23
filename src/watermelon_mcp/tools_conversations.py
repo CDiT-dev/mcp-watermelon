@@ -1,7 +1,7 @@
 """Conversation tools for Watermelon MCP server."""
 
 import json
-from typing import Annotated
+from typing import Annotated, Optional
 from urllib.parse import quote
 
 from fastmcp import FastMCP
@@ -15,18 +15,26 @@ def register_conversation_tools(mcp: FastMCP, client: WatermelonClient) -> None:
 
     @mcp.tool(name="watermelon_conversations_list")
     async def conversations_list(
-        limit: Annotated[int, Field(ge=1, le=100, description="Number of conversations to return")] = 50,
-        offset: Annotated[int, Field(ge=0, description="Number of conversations to skip for pagination")] = 0,
+        limit: Annotated[int, Field(ge=1, le=100, description="Number of conversations to return")] = 25,
+        page: Annotated[int, Field(ge=0, description="Page number for pagination (0-based)")] = 0,
+        date_from: Annotated[Optional[str], "Start of date range filter (ISO 8601, e.g. '2026-01-01T00:00:00Z')"] = None,
+        date_to: Annotated[Optional[str], "End of date range filter (ISO 8601)"] = None,
     ) -> str:
-        """List conversations with pagination.
+        """List all company conversations with pagination and optional date filtering.
 
-        Returns conversation summaries. Use watermelon_conversations_get to
-        fetch full message history for a specific conversation.
+        Returns conversation objects including id, caller_id, user_id, service
+        (telegram/facebook/mail/webchat/twitter/whatsapp), is_closed, archived,
+        team_id, and a nested messages array.
 
-        Note: This endpoint requires an active Watermelon chatbot to be
-        configured. Returns 503 if no chatbot is set up.
+        Use date_from/date_to to narrow results to a time window.
+        Use watermelon_conversations_get for full details on a single conversation.
         """
-        result = await client.get(f"/conversations?limit={limit}&offset={offset}")
+        params = f"limit={limit}&page={page}"
+        if date_from is not None:
+            params += f"&from={quote(date_from, safe='')}"
+        if date_to is not None:
+            params += f"&to={quote(date_to, safe='')}"
+        result = await client.get(f"/all/conversations?{params}")
         return json.dumps(result, indent=2)
 
     @mcp.tool(name="watermelon_conversations_get")
@@ -35,8 +43,8 @@ def register_conversation_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     ) -> str:
         """Retrieve a specific conversation including its full message history.
 
-        Returns conversation metadata plus all messages in chronological order
-        with sender, content, and timestamp.
+        Returns conversation metadata (id, service, is_closed, team_id, etc.)
+        plus all messages with sender, type, payload, and timestamps.
 
         To reply, pass the conversation id to watermelon_messages_send.
         """
