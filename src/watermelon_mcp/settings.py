@@ -48,6 +48,14 @@ class Settings(BaseSettings):
         default="mcp-watermelon",
         description="Expected audience claim in Keycloak-issued JWTs",
     )
+    keycloak_client_id: str = Field(
+        default="mcp-watermelon",
+        description="Pre-registered Keycloak client ID for OIDCProxy",
+    )
+    keycloak_client_secret: str = Field(
+        default="",
+        description="Keycloak client secret for OIDCProxy",
+    )
     mcp_base_url: str = Field(
         default="",
         description="Public URL of this server (for Protected Resource Metadata)",
