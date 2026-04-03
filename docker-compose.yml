@@ -15,4 +15,10 @@ services:
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - MCP_BASE_URL=${MCP_BASE_URL:-}
       - MCP_API_KEY=${MCP_API_KEY:-}
+      - FASTMCP_HOME=/data/fastmcp
+    volumes:
+      - fastmcp-data:/data/fastmcp
     restart: unless-stopped
+
+volumes:
+  fastmcp-data:
