@@ -1,6 +1,7 @@
 """Watermelon MCP Server entry point."""
 
 from fastmcp import FastMCP
+from mcp.types import Icon
 
 from .client import WatermelonClient
 from .settings import get_settings
@@ -29,7 +30,16 @@ def create_server() -> FastMCP:
             api_key=settings.mcp_api_key,
         )
 
-    mcp = FastMCP("mcp-watermelon", auth=auth)
+    mcp = FastMCP(
+        "mcp-watermelon",
+        auth=auth,
+        icons=[
+            Icon(
+                src="https://watermelon.ai/favicons/logo.svg",
+                mimeType="image/svg+xml",
+            ),
+        ],
+    )
 
     register_contact_tools(mcp, client)
     register_conversation_tools(mcp, client)
