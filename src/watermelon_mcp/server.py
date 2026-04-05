@@ -23,11 +23,10 @@ def create_server() -> FastMCP:
         from .auth import build_auth
 
         auth = build_auth(
+            base_url=settings.mcp_base_url or f"http://{settings.mcp_host}:{settings.mcp_port}",
             keycloak_issuer=settings.keycloak_issuer,
             keycloak_client_id=settings.keycloak_client_id,
             keycloak_client_secret=settings.keycloak_client_secret,
-            base_url=settings.mcp_base_url or f"http://{settings.mcp_host}:{settings.mcp_port}",
-            api_key=settings.mcp_api_key,
         )
 
     mcp = FastMCP(
