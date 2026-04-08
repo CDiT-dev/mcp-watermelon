@@ -12,14 +12,14 @@ from .client import WatermelonClient
 def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     """Register all webhook-related tools."""
 
-    @mcp.tool(name="watermelon_webhooks_create")
+    @mcp.tool(name="webhooks_create")
     async def webhooks_create(
         url: Annotated[str, "HTTPS callback URL that will receive POST requests when the event fires"],
         action_id: Annotated[int, "Action ID defining the trigger type"],
         entity_id: Annotated[int, "Entity ID defining what object the webhook monitors"],
         verb_id: Annotated[int, "Verb ID defining what operation triggers the webhook"],
     ) -> str:
-        """Create a new webhook subscription.
+        """[crm] Create a new webhook subscription.
 
         Watermelon will POST a JSON payload to `url` when the specified
         action/entity/verb combination occurs. Returns the new webhook's
@@ -39,7 +39,7 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             return json.dumps({"id": result}, indent=2)
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_webhooks_update")
+    @mcp.tool(name="webhooks_update")
     async def webhooks_update(
         id: Annotated[str, "Webhook ID to update"],
         url: Annotated[Optional[str], "Updated HTTPS callback URL"] = None,
@@ -47,7 +47,7 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         entity_id: Annotated[Optional[int], "Updated entity ID"] = None,
         verb_id: Annotated[Optional[int], "Updated verb ID"] = None,
     ) -> str:
-        """Update an existing webhook's configuration.
+        """[crm] Update an existing webhook's configuration.
 
         At least one field must be provided.
         """
@@ -67,11 +67,11 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             return json.dumps({"status": "updated", "id": id})
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_webhooks_delete")
+    @mcp.tool(name="webhooks_delete")
     async def webhooks_delete(
         id: Annotated[str, "Webhook ID to delete"],
     ) -> str:
-        """Delete a webhook and stop receiving its event notifications.
+        """[crm] Delete a webhook and stop receiving its event notifications.
 
         This action is permanent. Returns confirmation on success.
         """

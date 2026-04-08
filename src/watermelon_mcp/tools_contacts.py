@@ -13,14 +13,14 @@ from .client import WatermelonClient
 def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     """Register all contact-related tools."""
 
-    @mcp.tool(name="watermelon_contacts_create")
+    @mcp.tool(name="contacts_create")
     async def contacts_create(
         email_address: Annotated[str, "Email address (must be unique across contacts)"],
         first_name: Annotated[Optional[str], "First name"] = None,
         last_name: Annotated[Optional[str], "Last name"] = None,
         telephone_number: Annotated[Optional[str], "Phone number in any format, e.g. '+49-555-0100'"] = None,
     ) -> str:
-        """Create a new contact in Watermelon.
+        """[crm] Create a new contact in Watermelon.
 
         email_address is required and must be unique. Returns the new contact's
         ID on success. Contact deletion is not supported by the API — contacts
@@ -38,9 +38,9 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             return json.dumps({"id": result}, indent=2)
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_contacts_get")
+    @mcp.tool(name="contacts_get")
     async def contacts_get(id: Annotated[str, "Contact ID (from contacts_list or contacts_search)"]) -> str:
-        """Retrieve a specific contact by ID.
+        """[crm] Retrieve a specific contact by ID.
 
         Returns full contact details including first_name, last_name,
         email_address, telephone_number, status (online/offline), avatar,
@@ -51,7 +51,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             return json.dumps(result[0], indent=2)
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_contacts_list")
+    @mcp.tool(name="contacts_list")
     async def contacts_list(
         limit: Annotated[int, Field(ge=1, le=100, description="Number of contacts to return")] = 25,
         page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
@@ -59,7 +59,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         date_from: Annotated[Optional[str], "Start of date range filter (ISO 8601)"] = None,
         date_to: Annotated[Optional[str], "End of date range filter (ISO 8601)"] = None,
     ) -> str:
-        """Retrieve contacts with pagination and optional date/anonymity filters.
+        """[crm] Retrieve contacts with pagination and optional date/anonymity filters.
 
         Returns an array of contact objects with id, first_name, last_name,
         email_address, telephone_number, status, and custom fields.
@@ -74,7 +74,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         result = await client.get(f"/contacts?{params}")
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_contacts_update")
+    @mcp.tool(name="contacts_update")
     async def contacts_update(
         id: Annotated[str, "Contact ID to update"],
         first_name: Annotated[Optional[str], "Updated first name"] = None,
@@ -82,7 +82,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         email_address: Annotated[Optional[str], "Updated email address"] = None,
         telephone_number: Annotated[Optional[str], "Updated phone number"] = None,
     ) -> str:
-        """Update an existing contact. Only provided fields are changed.
+        """[crm] Update an existing contact. Only provided fields are changed.
 
         Returns 204 on success (no body). Contact deletion is not supported
         by the Watermelon API.
@@ -103,13 +103,13 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
             return json.dumps({"status": "updated", "id": id})
         return json.dumps(result, indent=2)
 
-    @mcp.tool(name="watermelon_contacts_search")
+    @mcp.tool(name="contacts_search")
     async def contacts_search(
         field_value: Annotated[str, "Value to search for across contact fields"],
         limit: Annotated[int, Field(ge=1, le=100, description="Maximum results per page")] = 25,
         page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
     ) -> str:
-        """Search for contacts by field value.
+        """[crm] Search for contacts by field value.
 
         Searches across all contact fields (name, email, phone, etc.).
         Returns matching contacts with their IDs. Returns 204 if no matches.
