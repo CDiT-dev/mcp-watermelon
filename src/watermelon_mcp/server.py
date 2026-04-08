@@ -1,8 +1,11 @@
 """Watermelon MCP Server entry point."""
 
+import os
+
 from fastmcp import FastMCP
 from mcp.types import Icon
 
+from .auth import BearerTokenVerifier
 from .client import WatermelonClient
 from .settings import get_settings
 from .tools_contacts import register_contact_tools
@@ -17,17 +20,9 @@ def create_server() -> FastMCP:
     settings = get_settings()
     client = WatermelonClient(settings.watermelon_api_key, settings.watermelon_secret_key)
 
-    # Keycloak auth (optional — only active when keycloak_issuer is set)
-    auth = None
-    if settings.keycloak_issuer:
-        from .auth import build_auth
-
-        auth = build_auth(
-            base_url=settings.mcp_base_url or f"http://{settings.mcp_host}:{settings.mcp_port}",
-            keycloak_issuer=settings.keycloak_issuer,
-            keycloak_client_id=settings.keycloak_client_id,
-            keycloak_client_secret=settings.keycloak_client_secret,
-        )
+    # Bearer token auth (optional — only active when MCP_API_KEY is set)
+    _api_key = os.getenv("MCP_API_KEY", "")
+    auth = BearerTokenVerifier(api_key=_api_key) if _api_key else None
 
     mcp = FastMCP(
         "mcp-watermelon",
