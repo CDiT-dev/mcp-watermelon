@@ -22,6 +22,8 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     ) -> str:
         """[crm] Create a new contact in Watermelon.
 
+        Disambiguation: For CRM/live-chat contacts → watermelon. For accounting/invoice contacts → lexoffice.
+
         email_address is required and must be unique. Returns the new contact's
         ID on success. Contact deletion is not supported by the API — contacts
         can only be created and updated.
@@ -110,6 +112,8 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
     ) -> str:
         """[crm] Search for contacts by field value.
+
+        Disambiguation: For CRM/live-chat contacts → watermelon. For accounting/invoice contacts → lexoffice.
 
         Searches across all contact fields (name, email, phone, etc.).
         Returns matching contacts with their IDs. Returns 204 if no matches.

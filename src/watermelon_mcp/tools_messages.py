@@ -39,6 +39,8 @@ def register_message_tools(mcp: FastMCP, client: WatermelonClient) -> None:
     ) -> str:
         """[crm] Send a message in an existing conversation.
 
+        Disambiguation: For live-chat/CRM messages → watermelon. For social media DMs/inbox → zernio.
+
         All fields are required by the API. conversation_id and user_id are
         integers. The type field defaults to 'text' but supports: text, sticker,
         photo, video, file, activity, typing, attachment, emoji, location, contact.
