@@ -107,7 +107,7 @@ def register_contact_tools(mcp: FastMCP, client: WatermelonClient) -> None:
 
     @mcp.tool(name="contacts_search")
     async def contacts_search(
-        field_value: Annotated[str, "Value to search for across contact fields"],
+        field_value: Annotated[str, "Search query — matches across all contact fields (name, email, phone, etc.)"],
         limit: Annotated[int, Field(ge=1, le=100, description="Maximum results per page")] = 25,
         page: Annotated[int, Field(ge=0, description="Page number (0-based)")] = 0,
     ) -> str:

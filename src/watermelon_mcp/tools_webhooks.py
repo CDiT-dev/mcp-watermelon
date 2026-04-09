@@ -27,6 +27,10 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
 
         The action_id, entity_id, and verb_id together define the event.
         Note: the Watermelon API does not support listing webhooks via GET.
+
+        Note: action_id, entity_id, and verb_id are Watermelon-internal identifiers.
+        Inspect existing webhooks to discover valid combinations, or consult the
+        Watermelon API documentation.
         """
         data = {
             "url": url,
@@ -50,6 +54,10 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         """[crm] Update an existing webhook's configuration.
 
         At least one field must be provided.
+
+        Note: action_id, entity_id, and verb_id are Watermelon-internal identifiers.
+        Inspect existing webhooks to discover valid combinations, or consult the
+        Watermelon API documentation.
         """
         data: dict = {}
         if url is not None:
@@ -74,6 +82,10 @@ def register_webhook_tools(mcp: FastMCP, client: WatermelonClient) -> None:
         """[crm] Delete a webhook and stop receiving its event notifications.
 
         This action is permanent. Returns confirmation on success.
+
+        Note: action_id, entity_id, and verb_id are Watermelon-internal identifiers.
+        Inspect existing webhooks to discover valid combinations, or consult the
+        Watermelon API documentation.
         """
         result = await client.delete(f"/webhooks/{quote(id, safe='')}")
         if result is None:
