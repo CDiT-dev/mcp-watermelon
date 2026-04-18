@@ -9,7 +9,7 @@ keywords = [
     "mcp",
     "watermelon",
     "customer-support",
-    "fastmcp",
+    "fastmcp>=3.2.4",
 ]
 dependencies = [
     "fastmcp>=3.2.2",
