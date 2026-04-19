@@ -5,8 +5,8 @@ import os
 import pytest
 import pytest_asyncio
 
-from watermelon_mcp.client import WatermelonClient
-from watermelon_mcp.settings import Settings
+from mcp_watermelon.client import WatermelonClient
+from mcp_watermelon.settings import Settings
 
 
 @pytest.fixture(scope="session")

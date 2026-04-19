@@ -5,7 +5,7 @@ import uuid
 import pytest
 import httpx
 
-from watermelon_mcp.client import WatermelonClient
+from mcp_watermelon.client import WatermelonClient
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from watermelon_mcp.client import WatermelonClient
+from mcp_watermelon.client import WatermelonClient
 
 
 @pytest.mark.asyncio

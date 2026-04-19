@@ -2,7 +2,7 @@
 
 import pytest
 
-from watermelon_mcp.server import create_server
+from mcp_watermelon.server import create_server
 
 
 def test_server_creates_successfully() -> None:
