@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.5] - 2026-04-19
+
+- refactor(naming): rename watermelon_mcp package to mcp_watermelon
+
+
 ## [0.2.4] - 2026-04-19
 
 - fix(security): use SecretStr for credentials, remove os.getenv bypass
