@@ -1,6 +1,5 @@
 """Watermelon MCP Server entry point."""
 
-import os
 from datetime import datetime, timezone
 
 from fastmcp import FastMCP
@@ -24,10 +23,13 @@ _start_time = datetime.now(timezone.utc)
 def create_server() -> FastMCP:
     """Create and configure the FastMCP server with all tools."""
     settings = get_settings()
-    client = WatermelonClient(settings.watermelon_api_key, settings.watermelon_secret_key)
+    client = WatermelonClient(
+        settings.watermelon_api_key.get_secret_value(),
+        settings.watermelon_secret_key.get_secret_value(),
+    )
 
     # Bearer token auth. Fail-fast in HTTP mode (no more silent unauth starts).
-    _api_key = os.getenv("MCP_API_KEY", "")
+    _api_key = settings.mcp_api_key.get_secret_value()
     if settings.mcp_transport in ("http", "streamable-http") and not _api_key:
         raise SystemExit(
             "MCP_API_KEY is required in HTTP mode. Refusing to start "

@@ -3,7 +3,7 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,10 +17,10 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    watermelon_api_key: str = Field(
+    watermelon_api_key: SecretStr = Field(
         description="Watermelon.ai API key",
     )
-    watermelon_secret_key: str = Field(
+    watermelon_secret_key: SecretStr = Field(
         description="Watermelon.ai secret key",
     )
 
@@ -39,8 +39,8 @@ class Settings(BaseSettings):
         description="Port for streamable-http transport",
     )
 
-    mcp_api_key: str = Field(
-        default="",
+    mcp_api_key: SecretStr = Field(
+        default=SecretStr(""),
         description="Static API key for bearer token auth (Claude Code, n8n)",
     )
 
