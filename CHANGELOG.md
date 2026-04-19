@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.4] - 2026-04-19
+
+- fix(security): use SecretStr for credentials, remove os.getenv bypass
+
+
 ## [0.2.3] - 2026-04-18
 
 - feat(reliability): stateless_http, /health, fail-fast auth, FastMCP 3.2.4
