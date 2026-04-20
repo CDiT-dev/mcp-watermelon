@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.7] - 2026-04-20
+
+- ci(deps): enable Dependabot weekly updates
+
+
 ## [0.2.6] - 2026-04-20
 
 - chore(pkg): add __main__.py and py.typed per MCP Server Standards
