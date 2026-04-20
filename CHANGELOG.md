@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.6] - 2026-04-20
+
+- chore(pkg): add __main__.py and py.typed per MCP Server Standards
+
+
 ## [0.2.5] - 2026-04-19
 
 - refactor(naming): rename watermelon_mcp package to mcp_watermelon
