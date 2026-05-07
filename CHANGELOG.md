@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.8] - 2026-05-07
+
+- ops(docker): add log rotation (10m/3 files) to cap unbounded json-file logs
+
+
 ## [0.2.7] - 2026-04-20
 
 - ci(deps): enable Dependabot weekly updates
